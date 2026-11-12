@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{ obj['title'] }}{% endblock %}
+{% block content %}
+<h1>{{ obj['title'] }}</h1>
+<p class="regid">Permanent registration ID: <strong>{{ obj['registration_id'] }}</strong></p>
+{% if chain_ok %}
+  <p class="badge ok">Custody chain intact — all recorded events verify.</p>
+{% else %}
+  <p class="badge bad">WARNING: custody chain verification FAILED at event #{{ broken_at }}. Records may have been altered.</p>
+{% endif %}
+
+<section>
+  <h2>Details</h2>
+  <table class="details">
+    <tr><th>Category</th><td>{{ obj['category'].replace('_', ' ') }}</td></tr>
+    <tr><th>Registered by</th><td>{{ obj['owner_name'] }}</td></tr>
+    <tr><th>Registered on</th><td>{{ obj['created_at'] }}</td></tr>
+    {% for key, value in (obj['attributes_json'] | from_json).items() %}
+    <tr><th>{{ key.replace('_', ' ') | capitalize }}</th><td>{{ value }}</td></tr>
+    {% endfor %}
+    {% if obj['description'] %}<tr><th>Description</th><td>{{ obj['description'] }}</td></tr>{% endif %}
+  </table>
+</section>
+
+<section>
+  <h2>Photographs</h2>
+  {% if photos %}
+  <div class="gallery">
+    {% for photo in photos %}
+    <a href="{{ url_for('uploaded_file', filename=photo['filename']) }}" target="_blank">
+      <img src="{{ url_for('uploaded_file', filename=photo['filename']) }}" alt="Photo of {{ obj['title'] }}">
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}<p>No photographs uploaded.</p>{% endif %}
+</section>
+
+<section>
+  <h2>Documented history</h2>
+  <p class="hint">Entries marked <span class="tag claim">claim</span> are unverified statements by a user. Entries marked <span class="tag verified">verified</span> have been checked against supporting evidence by a verifier. Registration on this site is never proof of authenticity.</p>
+  <ol class="history">
+    {% for event in events %}
+    <li>
+      <div>
+        <strong>{{ event['event_type'].replace('_', ' ') | capitalize }}</strong>
+        <span class="tag {{ event['status'] }}">{{ event['status'] }}</span>
+        <span class="meta">{{ event['created_at'] }} — {{ event['actor_name'] or 'system' }}</span>
+      </div>
+      {% set d = event['details_json'] | from_json %}
+      {% if d.get('text') %}<p>{{ d['text'] }}</p>{% endif %}
+      {% if event['evidence_filename'] %}
+        <p>Evidence: <a href="{{ url_for('uploaded_file', filename=event['evidence_filename']) }}" target="_blank">view attached evidence</a></p>
+      {% endif %}
+      <p class="meta">Ledger hash: <code>{{ event['hash'] }}</code></p>
+      {% if session.get('user_id') and event['status'] == 'claim' %}
+      <form method="post" action="{{ url_for('verify_event', reg_id=obj['registration_id'], event_id=event['id']) }}">
+        <button type="submit" class="small">Mark verified (verifiers only)</button>
+      </form>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+{% if session.get('user_id') == obj['owner_id'] %}
+<section>
+  <h2>Record a new event</h2>
+  <form method="post" action="{{ url_for('add_event', reg_id=obj['registration_id']) }}" enctype="multipart/form-data">
+    <label>Event type
+      <select name="event_type">
+        <option value="ownership_claim">Ownership claim</option>
+        <option value="custody_transfer_claim">Custody transfer claim</option>
+        <option value="condition_note">Condition note</option>
+        <option value="note">Other note</option>
+      </select>
+    </label>
+    <label>Details
+      <textarea name="details" rows="3" required placeholder="Describe what happened, when, and with whom."></textarea>
+    </label>
+    <label>Supporting evidence (photo of receipt, letter, document…)
+      <input type="file" name="evidence" accept=".png,.jpg,.jpeg,.webp,.gif">
+    </label>
+    <button type="submit">Record event</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

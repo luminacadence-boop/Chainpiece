@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Register your collectibles. Prove their history.</h1>
+  <p>Chainpiece gives every object a permanent registration ID and a tamper-evident, hash-chained record of its documented history — photographs, ownership claims, and custody transfers.</p>
+  <p><a class="button" href="{{ url_for('signup') }}">Create your account</a></p>
+</section>
+<section>
+  <h2>How it works</h2>
+  <ol>
+    <li>Create a free collector account.</li>
+    <li>Register an object with photos and details (date, mint mark, weight, distinguishing features).</li>
+    <li>Receive a permanent registration ID (format <code>CRN-XXXXX-XXXXX</code>).</li>
+    <li>Record its history. Every event is chained cryptographically to the one before it, so any tampering is detectable.</li>
+    <li>Share the object's public profile page with other collectors.</li>
+  </ol>
+  <p><strong>Important:</strong> everything recorded here is a <em>claim</em> until verified evidence supports it. The site clearly separates unverified claims from verified records.</p>
+</section>
+{% endblock %}
