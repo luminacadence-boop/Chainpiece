@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Register an object{% endblock %}
+{% block content %}
+<h1>Register a new collectible</h1>
+<form method="post" enctype="multipart/form-data">
+  <label>Category
+    <select name="category" required>
+      <option value="coin">Coin</option>
+      <option value="uranium_glass">Uranium glass</option>
+      <option value="antique">Antique</option>
+      <option value="artifact">Historical artifact</option>
+      <option value="other">Other</option>
+    </select>
+  </label>
+  <label>Title
+    <input type="text" name="title" required placeholder="e.g. 1893-S Morgan Silver Dollar">
+  </label>
+  <label>Description
+    <textarea name="description" rows="3" placeholder="Free-text description of the object"></textarea>
+  </label>
+  <fieldset>
+    <legend>Details (anything you know — this becomes part of the registration record)</legend>
+    <label>Date / year <input type="text" name="attr_date"></label>
+    <label>Mint mark <input type="text" name="attr_mint_mark"></label>
+    <label>Weight <input type="text" name="attr_weight"></label>
+    <label>Distinguishing features <input type="text" name="attr_features"></label>
+    <label>Serial number / inscription <input type="text" name="attr_serial"></label>
+  </fieldset>
+  <label>Photographs (you can select several)
+    <input type="file" name="photos" accept=".png,.jpg,.jpeg,.webp,.gif" multiple>
+  </label>
+  <button type="submit">Register object</button>
+</form>
+{% endblock %}

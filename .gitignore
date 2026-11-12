@@ -1,0 +1,5 @@
+registry.sqlite3
+uploads/
+__pycache__/
+*.pyc
+.pytest_cache/

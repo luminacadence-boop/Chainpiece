@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}My Collection{% endblock %}
+{% block content %}
+<h1>My collection</h1>
+<p><a class="button" href="{{ url_for('new_object') }}">Register a new object</a></p>
+{% if objects %}
+<table>
+  <tr><th>Registration ID</th><th>Title</th><th>Category</th><th>Registered</th></tr>
+  {% for obj in objects %}
+  <tr>
+    <td><a href="{{ url_for('object_profile', reg_id=obj['registration_id']) }}">{{ obj['registration_id'] }}</a></td>
+    <td>{{ obj['title'] }}</td>
+    <td>{{ obj['category'] }}</td>
+    <td>{{ obj['created_at'] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>You have not registered any objects yet.</p>
+{% endif %}
+{% endblock %}
